@@ -50,7 +50,7 @@ const Home = () => {
         setIsLoading(false);
       });
   };
-  // console.log(myData, "myData");
+
   useEffect(() => {
     cardData();
   }, []);
@@ -70,15 +70,8 @@ const Home = () => {
         setIsLoading(false);
       });
   };
-  const handleSingleProduct = (ind) => {
-    console.log("Single product");
-    fetch(`https://fakestoreapi.com/products/${ind + 1}`)
-      .then((res) => res.json())
-      .then((json) => {
-        // navigate("/cart");
-        // setMyData(json);
-        console.log(json);
-      });
+  const handleSingleProduct = (id) => {
+    navigate(`/cart/${id}`);
   };
 
   return (
@@ -137,7 +130,7 @@ const Home = () => {
                         <Button
                           size="small"
                           className="border-2"
-                          onClick={() => handleSingleProduct(ind)}
+                          onClick={() => handleSingleProduct(ele.id)}
                         >
                           Add To Cart
                         </Button>
