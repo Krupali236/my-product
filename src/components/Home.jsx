@@ -18,7 +18,7 @@ const Home = () => {
   const [category, setCategory] = useState([]);
   const [myData, setMyData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const fetchData = () => {
     setIsLoading(true);
@@ -72,10 +72,10 @@ const Home = () => {
   };
   const handleSingleProduct = (ind) => {
     console.log("Single product");
-
-    fetch(`https://fakestoreapi.com/products/${ind+1}`)
+    fetch(`https://fakestoreapi.com/products/${ind + 1}`)
       .then((res) => res.json())
       .then((json) => {
+        // navigate("/cart");
         // setMyData(json);
         console.log(json);
       });
@@ -112,7 +112,8 @@ const Home = () => {
           <div className="grid grid-cols-4 gap-4">
             {myData.map((ele, ind) => {
               return (
-                <Card key={ind}
+                <Card
+                  key={ele.id}
                   sx={{ minWidth: 300, marginTop: "20px", height: "400px" }}
                 >
                   <CardMedia
@@ -128,7 +129,7 @@ const Home = () => {
                     >
                       {ele.title}
                     </Typography>
-                    <div className="flex justify-between items-end  ">
+                    <div className="flex justify-between items-end">
                       <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
                         <b> Price :</b> {ele.price}
                       </Typography>
