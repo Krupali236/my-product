@@ -12,11 +12,14 @@ import {
   Button,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [category, setCategory] = useState([]);
   const [myData, setMyData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  // const navigate = useNavigate();
+
   const fetchData = () => {
     setIsLoading(true);
     fetch("https://fakestoreapi.com/products/categories")
@@ -35,7 +38,7 @@ const Home = () => {
   }, []);
 
   const cardData = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetch("https://fakestoreapi.com/products")
       .then((res) => res.json())
       .then((json) => setMyData(json))
@@ -47,20 +50,14 @@ const Home = () => {
         setIsLoading(false);
       });
   };
-  console.log(myData, "myData");
+  // console.log(myData, "myData");
   useEffect(() => {
     cardData();
   }, []);
 
-//   const handleChange = (e) => {
-//     const cat = e.target.value;
-//     console.log(cat, "value");
-//   };
-
   const filteredData = (e) => {
-    setIsLoading(true)
+    setIsLoading(true);
     const cat = e.target.value;
-    console.log(cat, "value");
 
     fetch(`https://fakestoreapi.com/products/category/${cat}`)
       .then((res) => res.json())
@@ -73,8 +70,16 @@ const Home = () => {
         setIsLoading(false);
       });
   };
-  console.log(myData,"Filtered Data");
+  const handleSingleProduct = (ind) => {
+    console.log("Single product");
 
+    fetch(`https://fakestoreapi.com/products/${ind+1}`)
+      .then((res) => res.json())
+      .then((json) => {
+        // setMyData(json);
+        console.log(json);
+      });
+  };
 
   return (
     <>
@@ -95,7 +100,7 @@ const Home = () => {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              label="category"
+              label={category}
               onChange={filteredData}
             >
               {category.map((v) => {
@@ -105,10 +110,10 @@ const Home = () => {
           </FormControl>
 
           <div className="grid grid-cols-4 gap-4">
-            {myData.map((ele) => {
+            {myData.map((ele, ind) => {
               return (
-                <Card
-                  sx={{ minWidth: 275, marginTop: "20px", height: "400px" }}
+                <Card key={ind}
+                  sx={{ minWidth: 300, marginTop: "20px", height: "400px" }}
                 >
                   <CardMedia
                     sx={{ height: "300px" }}
@@ -119,18 +124,25 @@ const Home = () => {
                   <CardContent>
                     <Typography
                       gutterBottom
-                      sx={{ color: "text.secondary", fontSize: 14 }}
+                      sx={{ color: "text.secondary", fontSize: 12, height: 25 }}
                     >
                       {ele.title}
                     </Typography>
-                    <Typography variant="h5" component="div"></Typography>
-                    <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
-                      {ele.price}
-                    </Typography>
+                    <div className="flex justify-between items-end  ">
+                      <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
+                        <b> Price :</b> {ele.price}
+                      </Typography>
+                      <CardActions>
+                        <Button
+                          size="small"
+                          className="border-2"
+                          onClick={() => handleSingleProduct(ind)}
+                        >
+                          Add To Cart
+                        </Button>
+                      </CardActions>
+                    </div>
                   </CardContent>
-                  <CardActions>
-                    <Button size="small">Learn More</Button>
-                  </CardActions>
                 </Card>
               );
             })}
