@@ -37,7 +37,7 @@ const Home = () => {
         // Handle any errors that occurred during the fetch
         console.error("Fetch error:", error);
       })
-      .finally(() => {g
+      .finally(() => {
         setIsLoading(false);
       });
   };
@@ -363,7 +363,6 @@ const Home = () => {
                 </>
               );
             })}
-
             {open && (
               <>
                 <Dialog open={open} onClose={handleClose}>
