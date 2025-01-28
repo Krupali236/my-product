@@ -37,7 +37,7 @@ const Home = () => {
         // Handle any errors that occurred during the fetch
         console.error("Fetch error:", error);
       })
-      .finally(() => {
+      .finally(() => {g
         setIsLoading(false);
       });
   };
@@ -66,7 +66,6 @@ const Home = () => {
   const filteredData = (e) => {
     setIsLoading(true);
     const cat = e.target.value;
-
     fetch(`https://fakestoreapi.com/products/category/${cat}`)
       .then((res) => res.json())
       .then((json) => setMyData(json))
@@ -96,6 +95,7 @@ const Home = () => {
     setOpen(true);
   };
   const handleAddItem = () => {
+    setIsLoading(true);
     const payload = {
       title: addProduct.title,
       price: addProduct.price,
@@ -111,6 +111,9 @@ const Home = () => {
       .then((json) => {
         console.log(json, "json");
         setMyData([...myData, { ...payload, id: json.id }]);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
     setOpen(false);
     setAddProduct({});
@@ -127,6 +130,7 @@ const Home = () => {
     setIsUpdate(true);
   };
   const handleUpdateProduct = (index) => {
+    setIsLoading(true);
     const updatedProducts = [...myData];
     updatedProducts[updateIndex] = { ...addProduct };
     setMyData(updatedProducts);
@@ -137,12 +141,16 @@ const Home = () => {
       .then((res) => res.json())
       .then((json) => {
         setMyData(updatedProducts);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     setIsUpdate(false);
     setAddProduct({});
   };
   const handleDeleteButton = (index) => {
+    setIsLoading(true);
     fetch(`https://fakestoreapi.com/products/${index}`, {
       method: "DELETE",
     })
@@ -151,6 +159,9 @@ const Home = () => {
         console.log(json, "json");
         const deleteProduct = myData.filter((_, ind) => ind !== index);
         setMyData(deleteProduct);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
   return (
