@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import {
   FormControl,
   InputLabel,
@@ -17,8 +16,6 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { image } from "framer-motion/client";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,9 +27,7 @@ const Home = () => {
   const [addProduct, setAddProduct] = useState({});
   const [isUpdate, setIsUpdate] = useState(false);
   const [updateIndex, setUpdateIndex] = useState();
-  const [updateProduct, setUpdateProduct] = useState({});
   const navigate = useNavigate();
-  // console.log(myData, "myData");
   const fetchData = () => {
     setIsLoading(true);
     fetch("https://fakestoreapi.com/products/categories")
@@ -96,16 +91,11 @@ const Home = () => {
       ...prev,
       [name]: value,
     }));
-    console.log(addProduct);
-    console.log(myData, "myData");
   };
   const handleAddButton = () => {
-    console.log("add");
     setOpen(true);
   };
   const handleAddItem = () => {
-    console.log(addProduct, "addProduct");
-    console.log(myData, "myData");
     const payload = {
       title: addProduct.title,
       price: addProduct.price,
@@ -120,7 +110,6 @@ const Home = () => {
       .then((res) => res.json())
       .then((json) => {
         console.log(json, "json");
-        console.log(json.id, "json.id");
         setMyData([...myData, { ...payload, id: json.id }]);
       });
     setOpen(false);
@@ -128,7 +117,6 @@ const Home = () => {
   };
   const handleUpdateButton = (index) => {
     setUpdateIndex(index);
-    console.log(myData[index], "myData[index]");
     setAddProduct({
       title: myData[index].title,
       price: myData[index].price,
@@ -142,8 +130,6 @@ const Home = () => {
     const updatedProducts = [...myData];
     updatedProducts[updateIndex] = { ...addProduct };
     setMyData(updatedProducts);
-    // console.log(updatedProducts[index], "updateProduct[index]");
-
     fetch(`https://fakestoreapi.com/products/${index}`, {
       method: "PUT",
       body: JSON.stringify(updatedProducts),
@@ -151,23 +137,18 @@ const Home = () => {
       .then((res) => res.json())
       .then((json) => {
         setMyData(updatedProducts);
-        // console.log(updatedProducts, "updatedProducts");
-        // console.log(json, "json");
       });
 
     setIsUpdate(false);
     setAddProduct({});
   };
   const handleDeleteButton = (index) => {
-    // console.log(index, "index");
-    // const deleteProduct = myData.filter((_, ind) => ind !== index);
-    // setMyData(deleteProduct);
-
     fetch(`https://fakestoreapi.com/products/${index}`, {
       method: "DELETE",
     })
       .then((res) => res.json())
       .then((json) => {
+        console.log(json, "json");
         const deleteProduct = myData.filter((_, ind) => ind !== index);
         setMyData(deleteProduct);
       });
@@ -450,7 +431,6 @@ const Home = () => {
                         label={category}
                         name="category"
                         value={addProduct?.category}
-                        // onChange={filteredData}
                         onChange={(e) => {
                           handleOnChange(e);
                         }}
