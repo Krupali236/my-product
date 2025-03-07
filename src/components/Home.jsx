@@ -145,7 +145,7 @@ const Home = () => {
                   alt={ele.title}
                 />
                 <CardContent>
-                  <Typography sx={{ fontSize: 14, height: 85}} gutterBottom>
+                  <Typography sx={{ fontSize: 14, height: 85 }} gutterBottom>
                     {ele.title}
                   </Typography>
                   <Typography>
