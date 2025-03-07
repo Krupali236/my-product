@@ -28,442 +28,230 @@ const Home = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [updateIndex, setUpdateIndex] = useState();
   const navigate = useNavigate();
-  const fetchData = () => {
+
+  useEffect(() => {
     setIsLoading(true);
     fetch("https://fakestoreapi.com/products/categories")
       .then((res) => res.json())
       .then((json) => setCategory(json))
-      .catch((error) => {
-        // Handle any errors that occurred during the fetch
-        console.error("Fetch error:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+      .catch((error) => console.error("Fetch error:", error))
+      .finally(() => setIsLoading(false));
 
-  const cardData = () => {
-    setIsLoading(true);
     fetch("https://fakestoreapi.com/products")
       .then((res) => res.json())
       .then((json) => setMyData(json))
-      .catch((error) => {
-        // Handle any errors that occurred during the fetch
-        console.error("Fetch error:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    cardData();
+      .catch((error) => console.error("Fetch error:", error))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const filteredData = (e) => {
     setIsLoading(true);
-    const cat = e.target.value;
-    fetch(`https://fakestoreapi.com/products/category/${cat}`)
+    fetch(`https://fakestoreapi.com/products/category/${e.target.value}`)
       .then((res) => res.json())
       .then((json) => setMyData(json))
-      .catch((error) => {
-        // Handle any errors that occurred during the fetch
-        console.error("Fetch error:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .catch((error) => console.error("Fetch error:", error))
+      .finally(() => setIsLoading(false));
   };
-  const handleSingleProduct = (id) => {
-    navigate(`/cart/${id}`);
-  };
+
+  const handleSingleProduct = (id) => navigate(`/cart/${id}`);
   const handleClose = () => {
     setOpen(false);
     setIsUpdate(false);
+    setAddProduct({});
   };
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setAddProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setAddProduct((prev) => ({ ...prev, [name]: value }));
   };
-  const handleAddButton = () => {
-    setOpen(true);
-  };
+  const handleAddButton = () => setOpen(true);
+
   const handleAddItem = () => {
     setIsLoading(true);
-    const payload = {
-      title: addProduct.title,
-      price: addProduct.price,
-      description: addProduct.description,
-      image: addProduct.image,
-      category: addProduct.category,
-    };
+    const payload = { ...addProduct };
     fetch("https://fakestoreapi.com/products", {
       method: "POST",
       body: JSON.stringify(payload),
     })
       .then((res) => res.json())
-      .then((json) => {
-        console.log(json, "json");
-        setMyData([...myData, { ...payload, id: json.id }]);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-    setOpen(false);
-    setAddProduct({});
+      .then((json) => setMyData([...myData, { ...payload, id: json.id }]))
+      .finally(() => setIsLoading(false));
+
+    handleClose();
   };
+
   const handleUpdateButton = (index) => {
     setUpdateIndex(index);
-    setAddProduct({
-      title: myData[index].title,
-      price: myData[index].price,
-      description: myData[index].description,
-      image: myData[index].image,
-      category: myData[index].category,
-    });
+    setAddProduct({ ...myData[index] });
     setIsUpdate(true);
   };
-  const handleUpdateProduct = (index) => {
+
+  const handleUpdateProduct = () => {
     setIsLoading(true);
     const updatedProducts = [...myData];
     updatedProducts[updateIndex] = { ...addProduct };
     setMyData(updatedProducts);
-    fetch(`https://fakestoreapi.com/products/${index}`, {
-      method: "PUT",
-      body: JSON.stringify(updatedProducts),
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        setMyData(updatedProducts);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-
-    setIsUpdate(false);
-    setAddProduct({});
+    handleClose();
   };
+
   const handleDeleteButton = (index) => {
     setIsLoading(true);
-    fetch(`https://fakestoreapi.com/products/${index}`, {
-      method: "DELETE",
-    })
+    fetch(`https://fakestoreapi.com/products/${index}`, { method: "DELETE" })
       .then((res) => res.json())
-      .then((json) => {
-        console.log(json, "json");
-        const deleteProduct = myData.filter((_, ind) => ind !== index);
-        setMyData(deleteProduct);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .then(() => setMyData(myData.filter((_, ind) => ind !== index)))
+      .finally(() => setIsLoading(false));
   };
+
   return (
     <>
       {isLoading ? (
-        <div>
+        <div className="flex justify-center items-center h-screen">
           <CircularProgress />
         </div>
       ) : (
-        <div>
-          <div className="flex items-center">
-            <div className="w-full">
-              <FormControl fullWidth>
-                <InputLabel
-                  id="demo-simple-select-label"
-                  style={{ backgroundColor: "white" }}
-                >
-                  products{" "}
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label={category}
-                  onChange={filteredData}
-                >
-                  {category.map((v) => {
-                    return <MenuItem value={v}>{v}</MenuItem>;
-                  })}
-                </Select>
-              </FormControl>
-            </div>
-            <div className="w-52">
-              <Button
-                sx={{ backgroundColor: "#1976d2", color: "white" }}
-                onClick={handleAddButton}
+        <div className="max-w-screen-xl mx-auto p-4">
+          {/* Category & Add Button */}
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Products</InputLabel>
+              <Select
+                labelId="category-select-label"
+                onChange={filteredData}
+                defaultValue=""
               >
-                Add Product
-              </Button>
-            </div>
+                {category.map((v, index) => (
+                  <MenuItem key={index} value={v}>
+                    {v}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Button
+              sx={{ backgroundColor: "#1976d2", color: "white" }}
+              onClick={handleAddButton}
+            >
+              Add Product
+            </Button>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
-            {myData.map((ele, ind) => {
-              return (
-                <>
-                  <Card
-                    key={ele.id}
-                    sx={{ minWidth: 300, marginTop: "20px", height: "480px" }}
-                  >
-                    <CardMedia
-                      sx={{ height: "300px" }}
-                      component="img"
-                      image={ele.image}
-                      alt="Paella dish"
-                    />
-                    <CardContent>
-                      <Typography
-                        gutterBottom
-                        sx={{
-                          color: "text.secondary",
-                          fontSize: 12,
-                          height: 35,
-                        }}
-                      >
-                        {ele.title}
-                      </Typography>
-                      <div className="flex justify-between items-end">
-                        <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
-                          <b> Price :</b> ${ele.price}
-                        </Typography>
-                        <CardActions>
-                          <Button
-                            size="small"
-                            className="border-2"
-                            onClick={() => handleSingleProduct(ele.id)}
-                          >
-                            Add To Cart
-                          </Button>
-                        </CardActions>
-                      </div>
-                      <CardActions>
-                        <Button
-                          size="small"
-                          className="border-2"
-                          onClick={() => handleUpdateButton(ind)}
-                        >
-                          Update Product
-                        </Button>
-                        <Button
-                          size="small"
-                          className="border-2"
-                          onClick={() => handleDeleteButton(ind)}
-                        >
-                          Delete Product
-                        </Button>
-                      </CardActions>
-                    </CardContent>
-                  </Card>
-                  {isUpdate && (
-                    <>
-                      <Dialog open={isUpdate} onClose={handleClose}>
-                        <DialogTitle>Add an item</DialogTitle>
-                        <DialogContent>
-                          <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="title"
-                            name="title"
-                            value={addProduct?.title}
-                            label="Product Title"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            onChange={(e) => {
-                              handleOnChange(e);
-                            }}
-                          />
-                          <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="price"
-                            name="price"
-                            value={addProduct?.price}
-                            label="Product Price"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            onChange={(e) => {
-                              handleOnChange(e);
-                            }}
-                          />
-                          <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="image"
-                            name="image"
-                            value={addProduct?.image}
-                            label="Product Image"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            onChange={(e) => {
-                              handleOnChange(e);
-                            }}
-                          />
-                          <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="description"
-                            name="description"
-                            value={addProduct?.description}
-                            label="Product Description"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            onChange={(e) => {
-                              handleOnChange(e);
-                            }}
-                          />
-                          <FormControl sx={{ margin: "10px 0px" }} fullWidth>
-                            <InputLabel
-                              id="demo-simple-select-label"
-                              style={{ backgroundColor: "white" }}
-                            >
-                              Select Category
-                            </InputLabel>
-                            <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              label={category}
-                              name="category"
-                              value={addProduct?.category}
-                              onChange={(e) => {
-                                handleOnChange(e);
-                              }}
-                            >
-                              {category.map((v) => {
-                                return <MenuItem value={v}>{v}</MenuItem>;
-                              })}
-                            </Select>
-                          </FormControl>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleClose}>Cancel</Button>
-                          <Button
-                            type="submit"
-                            onClick={() => handleUpdateProduct(ind)}
-                          >
-                            Save
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
-                    </>
-                  )}
-                </>
-              );
-            })}
-            {open && (
-              <>
-                <Dialog open={open} onClose={handleClose}>
-                  <DialogTitle>Add an item</DialogTitle>
-                  <DialogContent>
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="title"
-                      name="title"
-                      value={addProduct?.title}
-                      label="Product Title"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      onChange={(e) => {
-                        handleOnChange(e);
-                      }}
-                    />
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="price"
-                      name="price"
-                      value={addProduct?.price}
-                      label="Product Price"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      onChange={(e) => {
-                        handleOnChange(e);
-                      }}
-                    />
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="image"
-                      name="image"
-                      value={addProduct?.image}
-                      label="Product Image"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      onChange={(e) => {
-                        handleOnChange(e);
-                      }}
-                    />
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="description"
-                      name="description"
-                      value={addProduct?.description}
-                      label="Product Description"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      onChange={(e) => {
-                        handleOnChange(e);
-                      }}
-                    />
-                    <FormControl sx={{ margin: "10px 0px" }} fullWidth>
-                      <InputLabel
-                        id="demo-simple-select-label"
-                        style={{ backgroundColor: "white" }}
-                      >
-                        Select Category
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label={category}
-                        name="category"
-                        value={addProduct?.category}
-                        onChange={(e) => {
-                          handleOnChange(e);
-                        }}
-                      >
-                        {category.map((v) => {
-                          return <MenuItem value={v}>{v}</MenuItem>;
-                        })}
-                      </Select>
-                    </FormControl>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit" onClick={handleAddItem}>
-                      Add
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-6">
+            {myData.map((ele, ind) => (
+              <Card key={ele.id} sx={{ minWidth: 280, height: 400 }}>
+                <CardMedia
+                  sx={{ height: 200 }}
+                  component="img"
+                  image={ele.image}
+                  alt={ele.title}
+                />
+                <CardContent>
+                  <Typography sx={{ fontSize: 14, height: 85}} gutterBottom>
+                    {ele.title}
+                  </Typography>
+                  <Typography>
+                    <b>Price:</b> ${ele.price}
+                  </Typography>
+                  <CardActions className="flex justify-between">
+                    <Button
+                      size="small"
+                      onClick={() => handleSingleProduct(ele.id)}
+                    >
+                      Add To Cart
                     </Button>
-                  </DialogActions>
-                </Dialog>
-              </>
-            )}
+                    <Button
+                      size="small"
+                      onClick={() => handleUpdateButton(ind)}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => handleDeleteButton(ind)}
+                    >
+                      Delete
+                    </Button>
+                  </CardActions>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Add / Update Product Dialog */}
+      {(open || isUpdate) && (
+        <Dialog open={open || isUpdate} onClose={handleClose} fullWidth>
+          <DialogTitle>
+            {isUpdate ? "Update Product" : "Add Product"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              name="title"
+              label="Product Title"
+              fullWidth
+              variant="standard"
+              value={addProduct.title || ""}
+              onChange={handleOnChange}
+            />
+            <TextField
+              required
+              margin="dense"
+              name="price"
+              label="Product Price"
+              fullWidth
+              variant="standard"
+              value={addProduct.price || ""}
+              onChange={handleOnChange}
+            />
+            <TextField
+              required
+              margin="dense"
+              name="image"
+              label="Product Image"
+              fullWidth
+              variant="standard"
+              value={addProduct.image || ""}
+              onChange={handleOnChange}
+            />
+            <TextField
+              required
+              margin="dense"
+              name="description"
+              label="Product Description"
+              fullWidth
+              variant="standard"
+              value={addProduct.description || ""}
+              onChange={handleOnChange}
+            />
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+              <InputLabel id="category-label">Select Category</InputLabel>
+              <Select
+                labelId="category-label"
+                name="category"
+                value={addProduct.category || ""}
+                onChange={handleOnChange}
+              >
+                {category.map((v, index) => (
+                  <MenuItem key={index} value={v}>
+                    {v}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={isUpdate ? handleUpdateProduct : handleAddItem}>
+              {isUpdate ? "Save" : "Add"}
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </>
   );
 };
+
 export default Home;
