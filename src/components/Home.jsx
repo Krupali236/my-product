@@ -156,7 +156,7 @@ const Home = () => {
                 />
                 <CardContent>
                   <Typography
-                    sx={{ fontSize: 14, height: 45, fontWeight: "bold" }}
+                    sx={{ fontSize: 12, height: 45, fontWeight: "bold" }}
                     gutterBottom
                   >
                     {ele.title}
