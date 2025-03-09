@@ -34,7 +34,7 @@ const Cart = () => {
 
   return (
     <div className="max-w-screen-lg mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center my-6">Cart Page</h1>
+      <h1 className="text-3xl font-bold text-center my-6">Product Details </h1>
       <Card className="flex flex-col md:flex-row items-center md:items-start bg-white shadow-lg rounded-lg p-6">
         {/* Product Image */}
         <div className="w-full md:w-1/3 flex justify-center p-4">
@@ -49,23 +49,37 @@ const Cart = () => {
         {/* Product Details */}
         <div className="w-full md:w-2/3 p-4 text-center md:text-left">
           <CardContent>
-            <Typography className="text-gray-800 text-2xl font-semibold py-2">
+            <Typography
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                padding: 3,
+                fontSize: "18px",
+              }}
+            >
               {myData.title}
             </Typography>
-            <Typography className="text-gray-600 text-lg py-2">
+            <Typography sx={{ color: "black", padding: 3, fontSize: "15px" }}>
               {myData.description}
             </Typography>
-            <Typography className="text-gray-800 text-xl font-bold py-2">
+            <Typography
+              sx={{
+                color: "black",
+                padding: 3,
+                fontSize: "18px",
+                fontWeight: "bold",
+              }}
+            >
               Price: ${myData.price}
             </Typography>
 
             {/* Back to Home Button */}
-            <div className="mt-5">
+            <div className="mt-5 p-5">
               <Link
                 to="/"
-                className="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition-all"
+                className="text-white bg-blue-500 px-5 py-2 rounded-lg hover:bg-blue-800 transition-all"
               >
-                Back to Home Page
+                <span className="text-white">Back to Home Page</span>
               </Link>
             </div>
           </CardContent>

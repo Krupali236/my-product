@@ -83,14 +83,21 @@ const Home = () => {
     setUpdateIndex(index);
     setAddProduct({ ...myData[index] });
     setIsUpdate(true);
+    setOpen(true); // ✅ Ensure the dialog opens
   };
 
   const handleUpdateProduct = () => {
     setIsLoading(true);
+
     const updatedProducts = [...myData];
-    updatedProducts[updateIndex] = { ...addProduct };
+    updatedProducts[updateIndex] = {
+      ...addProduct,
+      id: myData[updateIndex].id,
+    }; // ✅ Keep the same ID
+
     setMyData(updatedProducts);
     handleClose();
+    setIsLoading(false);
   };
 
   const handleDeleteButton = (index) => {
@@ -135,36 +142,63 @@ const Home = () => {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 my-6">
             {myData.map((ele, ind) => (
-              <Card key={ele.id} sx={{ minWidth: 280, height: 400 }}>
+              <Card
+                key={ele.id}
+                sx={{ minWidth: 280, height: 500, border: "1px solid grey" }}
+              >
                 <CardMedia
-                  sx={{ height: 200 }}
+                  sx={{ height: 300 }}
                   component="img"
                   image={ele.image}
                   alt={ele.title}
                 />
                 <CardContent>
-                  <Typography sx={{ fontSize: 14, height: 85 }} gutterBottom>
+                  <Typography
+                    sx={{ fontSize: 14, height: 45, fontWeight: "bold" }}
+                    gutterBottom
+                  >
                     {ele.title}
                   </Typography>
-                  <Typography>
-                    <b>Price:</b> ${ele.price}
+                  <Typography sx={{ marginTop: 3 }}>
+                    <b className="font-bold font-mono">
+                      Price:{" "}
+                      <span className="font-mono text-blue-800">
+                        {" "}
+                        ${ele.price}
+                      </span>
+                    </b>
                   </Typography>
-                  <CardActions className="flex justify-between">
+                  <CardActions className="flex justify-between my-3">
                     <Button
+                      sx={{
+                        backgroundColor: "blue",
+                        color: "white",
+                        padding: 1,
+                      }}
                       size="small"
                       onClick={() => handleSingleProduct(ele.id)}
                     >
-                      Add To Cart
+                      View
                     </Button>
                     <Button
+                      sx={{
+                        backgroundColor: "blue",
+                        color: "white",
+                        padding: 1,
+                      }}
                       size="small"
                       onClick={() => handleUpdateButton(ind)}
                     >
                       Update
                     </Button>
                     <Button
+                      sx={{
+                        backgroundColor: "blue",
+                        color: "white",
+                        padding: 1,
+                      }}
                       size="small"
                       onClick={() => handleDeleteButton(ind)}
                     >
